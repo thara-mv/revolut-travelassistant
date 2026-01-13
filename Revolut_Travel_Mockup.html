@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revolut Travel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0075EB;
+            --primary-dark: #0066D6;
+            --primary-light: #E8F2FF;
+            --secondary: #8B3DFF;
+            --success: #00D972;
+            --warning: #FFB800;
+            --danger: #FF5050;
+            --bg-main: #F5F5F5;
+            --bg-card: #FFFFFF;
+            --text-primary: #000000;
+            --text-secondary: #8F9193;
+            --border: #E6E6E6;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app-header {
+            background: var(--bg-card);
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 0.625rem 1.25rem;
+            background: none;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            background: var(--text-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .wallet-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--text-primary);
+            border-radius: 16px;
+            padding: 1.75rem;
+            color: white;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            transform: translate(40px, -40px);
+        }
+
+        .stat-card.secondary {
+            background: var(--primary);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #00C9A7, #00D972);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-family: 'Inter', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9375rem;
+            transition: all 0.3s ease;
+            background: var(--bg-card);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 117, 235, 0.1);
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 117, 235, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--text-primary);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8125rem;
+        }
+
+        .member-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .member-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary-light);
+            border-radius: 24px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary);
+            border: 1px solid rgba(0, 117, 235, 0.2);
+        }
+
+        .member-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            font-size: 1.125rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .remove-btn:hover {
+            color: var(--danger);
+        }
+
+        /* AI Chat Interface */
+        .chat-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .chat-message.user .chat-avatar {
+            background: var(--text-primary);
+        }
+
+        .chat-bubble {
+            max-width: 70%;
+            padding: 0.875rem 1.125rem;
+            border-radius: 16px;
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .chat-message.user .chat-bubble {
+            background: var(--primary);
+            color: white;
+        }
+
+        .chat-input-container {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9375rem;
+            background: var(--bg-main);
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Booking.com inspired accommodation */
+        .accommodation-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .accommodation-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .accommodation-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .accommodation-image {
+            width: 280px;
+            height: 220px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .accommodation-content {
+            flex: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .accommodation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .accommodation-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .accommodation-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .rating-badge {
+            background: var(--text-primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .accommodation-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+
+        .feature-badge {
+            padding: 0.375rem 0.75rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .accommodation-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .price-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .price-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .price-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* GetYourGuide inspired activities */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .activity-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .activity-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .activity-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .activity-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .activity-content {
+            padding: 1.25rem;
+        }
+
+        .activity-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .activity-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .activity-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .activity-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Transaction with split */
+        .transaction-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .transaction-card:hover {
+            background: var(--bg-main);
+        }
+
+        .transaction-main {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+
+        .transaction-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .transaction-icon.accommodation {
+            background: rgba(139, 61, 255, 0.1);
+        }
+
+        .transaction-icon.flights {
+            background: rgba(0, 117, 235, 0.1);
+        }
+
+        .transaction-icon.activities {
+            background: rgba(255, 184, 0, 0.1);
+        }
+
+        .transaction-icon.food {
+            background: rgba(255, 80, 80, 0.1);
+        }
+
+        .transaction-icon.transport {
+            background: rgba(0, 217, 114, 0.1);
+        }
+
+        .transaction-icon.contribution {
+            background: rgba(0, 201, 167, 0.1);
+        }
+
+        .transaction-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .transaction-name {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .transaction-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        .transaction-amount.debit {
+            color: var(--text-primary);
+        }
+
+        .transaction-amount.credit {
+            color: var(--success);
+        }
+
+        .transaction-split-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        .transaction-split-section.active {
+            display: block;
+        }
+
+        .split-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .split-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .split-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .split-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-main);
+            border-radius: 8px;
+        }
+
+        .split-member {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .split-amount {
+            font-weight: 600;
+        }
+
+        .split-amount-input {
+            width: 100px;
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .split-amount-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .split-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .split-mode-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .split-mode-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .split-mode-btn.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .split-error {
+            color: var(--danger);
+            font-size: 0.8125rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 80, 80, 0.1);
+            border-radius: 6px;
+        }
+
+        .split-success {
+            color: var(--success);
+            font-size: 0.8125rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0, 217, 114, 0.1);
+            border-radius: 6px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .status-badge.completed {
+            background: rgba(0, 217, 114, 0.1);
+            color: var(--success);
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 184, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .status-badge.split {
+            background: rgba(0, 117, 235, 0.1);
+            color: var(--primary);
+        }
+
+        /* Out of app expenses - Splitwise inspired */
+        .expense-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-main);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border);
+        }
+
+        .expense-info {
+            flex: 1;
+        }
+
+        .expense-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .expense-category {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .expense-split-info {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .expense-amount {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .balance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            background: var(--bg-main);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+        }
+
+        .balance-users {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .balance-arrow {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+        }
+
+        .balance-amount {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .balance-amount.positive {
+            color: var(--success);
+        }
+
+        .balance-amount.negative {
+            color: var(--danger);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 22, 40, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--bg-card);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .filter-tab.active {
+            background: var(--text-primary);
+            color: white;
+            border-color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+            }
+
+            .wallet-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .accommodation-card {
+                flex-direction: column;
+            }
+
+            .accommodation-image {
+                width: 100%;
+                height: 200px;
+            }
+
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">✈️</div>
+                <span>Revolut Travel</span>
+            </div>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-page="dashboard">Dashboard</button>
+                <button class="nav-tab" data-page="group">Group</button>
+                <button class="nav-tab" data-page="travel">Travel</button>
+                <button class="nav-tab" data-page="accommodation">Stay</button>
+                <button class="nav-tab" data-page="activities">Activities</button>
+                <button class="nav-tab" data-page="transactions">Transactions</button>
+                <button class="nav-tab" data-page="balances">Balances</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="wallet-summary">
+                <div class="stat-card">
+                    <div class="stat-label">Total Pool</div>
+                    <div class="stat-value" id="totalPool">€0.00</div>
+                </div>
+                <div class="stat-card secondary">
+                    <div class="stat-label">Total Expenses</div>
+                    <div class="stat-value" id="totalExpenses">€0.00</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-label">Remaining</div>
+                    <div class="stat-value" id="remaining">€0.00</div>
+                </div>
+            </div>
+
+            <div id="lowBalanceWarning" style="display: none; background: rgba(255, 80, 80, 0.1); border: 2px solid var(--danger); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.5rem;">⚠️</span>
+                    <div>
+                        <div style="font-weight: 700; color: var(--danger); margin-bottom: 0.25rem;">Insufficient Funds</div>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Your expenses exceed the pool balance. Please add more money to continue booking.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Quick Actions</h2>
+                </div>
+                <div class="grid-2">
+                    <button class="btn btn-primary" onclick="openModal('addMoneyModal')">💰 Add Money to Pool</button>
+                    <button class="btn btn-secondary" onclick="showPage('travel')">✈️ Plan Travel</button>
+                    <button class="btn btn-outline" onclick="showPage('accommodation')">🏨 Find Stay</button>
+                    <button class="btn btn-outline" onclick="showPage('activities')">🎯 Book Activities</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Activity</h2>
+                </div>
+                <div id="recentActivity"></div>
+            </div>
+        </div>
+
+        <!-- Group Management Page -->
+        <div id="group" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Group Members</h2>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Add Friend</label>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <input type="text" id="memberName" class="input-field" placeholder="Enter friend's name">
+                        <button class="btn btn-primary" onclick="addMember()">Add</button>
+                    </div>
+                </div>
+                <div class="member-list" id="memberList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <p>No members yet. Add friends to start planning!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Individual Contributions</h2>
+                </div>
+                <div id="contributionsList"></div>
+            </div>
+        </div>
+
+        <!-- Travel Page (AI Chat) -->
+        <div id="travel" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Revolut Travel Assistant</h2>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message">
+                            <div class="chat-avatar">AI</div>
+                            <div class="chat-bubble">
+                                👋 Hi! I'm your Revolut Travel Assistant. I can help you find the best flights, trains, and buses for your group. Where would you like to go?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chatInput" class="chat-input" placeholder="Ask about flights, trains, or buses..." onkeypress="if(event.key==='Enter') sendMessage()">
+                        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accommodation Page -->
+        <div id="accommodation" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Find Your Perfect Stay</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label class="input-label">Destination</label>
+                        <input type="text" id="accomDestination" class="input-field" placeholder="Where are you going?">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Check-in → Check-out</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="date" id="checkIn" class="input-field">
+                            <input type="date" id="checkOut" class="input-field">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label class="input-label">Budget per Night (€)</label>
+                        <input type="number" id="budget" class="input-field" placeholder="150">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Rooms</label>
+                        <input type="number" id="rooms" class="input-field" value="1" min="1">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="searchAccommodation()" style="width: 100%;">
+                    🔍 Search Accommodations
+                </button>
+            </div>
+
+            <div id="accommodationResults" class="accommodation-grid"></div>
+        </div>
+
+        <!-- Activities Page -->
+        <div id="activities" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Discover Activities & Tours</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label class="input-label">Destination</label>
+                        <input type="text" id="activityDestination" class="input-field" placeholder="e.g., Barcelona">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Interests</label>
+                        <input type="text" id="interests" class="input-field" placeholder="Museums, Food, Adventure...">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="generateActivities()" style="width: 100%;">
+                    ✨ Find Activities
+                </button>
+            </div>
+
+            <div id="activitiesResults" class="activities-grid"></div>
+        </div>
+
+        <!-- Transactions Page -->
+        <div id="transactions" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Transaction History</h2>
+                </div>
+                
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterTransactions('all')">All</button>
+                    <button class="filter-tab" onclick="filterTransactions('accommodation')">Accommodation</button>
+                    <button class="filter-tab" onclick="filterTransactions('flights')">Travel</button>
+                    <button class="filter-tab" onclick="filterTransactions('activities')">Activities</button>
+                    <button class="filter-tab" onclick="filterTransactions('food')">Food</button>
+                    <button class="filter-tab" onclick="filterTransactions('transport')">Transport</button>
+                    <button class="filter-tab" onclick="filterTransactions('contribution')">Contributions</button>
+                </div>
+
+                <div id="transactionsList"></div>
+            </div>
+        </div>
+
+        <!-- Balances Page -->
+        <div id="balances" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Who Owes Who</h2>
+                </div>
+                <div id="balancesList"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Individual Breakdown</h2>
+                </div>
+                <div id="individualBreakdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addMoneyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Money to Pool</h3>
+                <button class="close-btn" onclick="closeModal('addMoneyModal')">&times;</button>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Select Member</label>
+                <select id="contributorSelect" class="input-field"></select>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Amount (€)</label>
+                <input type="number" id="contributionAmount" class="input-field" placeholder="0.00" step="0.01">
+            </div>
+            <button class="btn btn-primary" onclick="addContribution()" style="width: 100%;">
+                Add to Pool
+            </button>
+        </div>
+    </div>
+
+    <div id="splitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Split Expense</h3>
+                <button class="close-btn" onclick="closeModal('splitModal')">&times;</button>
+            </div>
+            <div id="splitModalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        const state = {
+            members: ['Sarah', 'Alex', 'Emma', 'Michael'],
+            contributions: {
+                'Sarah': 500,
+                'Alex': 0,
+                'Emma': 500,
+                'Michael': 500
+            },
+            expenses: [],
+            transactions: [],
+            currentTransactionFilter: 'all'
+        };
+
+        // Initialize dummy data
+        function initializeDummyData() {
+            // Initialize contributions for members
+            state.members.forEach(member => {
+                if (!state.contributions[member]) {
+                    state.contributions[member] = 0;
+                }
+            });
+
+            // Dummy transactions with split information
+            state.transactions = [
+                {
+                    id: 1,
+                    name: 'Visit to La Sagrada Família',
+                    category: 'activities',
+                    amount: 32.00,
+                    type: 'debit',
+                    status: 'completed',
+                    date: new Date('2026-01-10T14:30:00'),
+                    paidBy: 'Sarah',
+                    icon: '🏛️',
+                    split: { 'Sarah': 8, 'Alex': 8, 'Emma': 8, 'Michael': 8 }
+                },
+                {
+                    id: 2,
+                    name: 'Hotel Barcelona Center',
+                    category: 'accommodation',
+                    amount: 456.00,
+                    type: 'debit',
+                    status: 'completed',
+                    date: new Date('2026-01-09T18:00:00'),
+                    paidBy: 'Group Wallet',
+                    icon: '🏨',
+                    split: { 'Sarah': 114, 'Alex': 114, 'Emma': 114, 'Michael': 114 }
+                },
+                {
+                    id: 3,
+                    name: 'Flight to Barcelona',
+                    category: 'flights',
+                    amount: 189.50,
+                    type: 'debit',
+                    status: 'completed',
+                    date: new Date('2026-01-08T09:15:00'),
+                    paidBy: 'Alex',
+                    icon: '✈️',
+                    split: { 'Alex': 189.50 }
+                },
+                {
+                    id: 4,
+                    name: 'Contribution from Emma',
+                    category: 'contribution',
+                    amount: 500.00,
+                    type: 'credit',
+                    status: 'completed',
+                    date: new Date('2026-01-08T08:00:00'),
+                    paidBy: 'Emma',
+                    icon: '💰',
+                    split: {}
+                },
+                {
+                    id: 5,
+                    name: 'Dinner at Cervecería Catalana',
+                    category: 'food',
+                    amount: 87.50,
+                    type: 'debit',
+                    status: 'completed',
+                    date: new Date('2026-01-10T20:30:00'),
+                    paidBy: 'Group Wallet',
+                    icon: '🍽️',
+                    split: { 'Sarah': 21.875, 'Alex': 21.875, 'Emma': 21.875, 'Michael': 21.875 }
+                },
+                {
+                    id: 6,
+                    name: 'Metro Card Barcelona',
+                    category: 'transport',
+                    amount: 45.00,
+                    type: 'debit',
+                    status: 'completed',
+                    date: new Date('2026-01-09T10:00:00'),
+                    paidBy: 'Group Wallet',
+                    icon: '🚇',
+                    split: { 'Sarah': 11.25, 'Alex': 11.25, 'Emma': 11.25, 'Michael': 11.25 }
+                },
+                {
+                    id: 7,
+                    name: 'Park Güell Tickets',
+                    category: 'activities',
+                    amount: 42.00,
+                    type: 'debit',
+                    status: 'completed',
+                    date: new Date('2026-01-11T11:00:00'),
+                    paidBy: 'Group Wallet',
+                    icon: '🎨',
+                    split: { 'Sarah': 10.5, 'Alex': 10.5, 'Emma': 10.5, 'Michael': 10.5 }
+                },
+                {
+                    id: 8,
+                    name: 'Contribution from Michael',
+                    category: 'contribution',
+                    amount: 500.00,
+                    type: 'credit',
+                    status: 'completed',
+                    date: new Date('2026-01-07T15:30:00'),
+                    paidBy: 'Michael',
+                    icon: '💰',
+                    split: {}
+                },
+                {
+                    id: 9,
+                    name: 'Tapas Tour Barcelona',
+                    category: 'activities',
+                    amount: 65.00,
+                    type: 'debit',
+                    status: 'completed',
+                    date: new Date('2026-01-11T18:00:00'),
+                    paidBy: 'Sarah',
+                    icon: '🥘',
+                    split: { 'Sarah': 16.25, 'Alex': 16.25, 'Emma': 16.25, 'Michael': 16.25 }
+                },
+                {
+                    id: 10,
+                    name: 'Brunch at Flax & Kale',
+                    category: 'food',
+                    amount: 54.30,
+                    type: 'debit',
+                    status: 'completed',
+                    date: new Date('2026-01-11T10:30:00'),
+                    paidBy: 'Group Wallet',
+                    icon: '🥗',
+                    split: { 'Sarah': 13.575, 'Alex': 13.575, 'Emma': 13.575, 'Michael': 13.575 }
+                },
+                {
+                    id: 11,
+                    name: 'Contribution from Sarah',
+                    category: 'contribution',
+                    amount: 500.00,
+                    type: 'credit',
+                    status: 'completed',
+                    date: new Date('2026-01-07T12:00:00'),
+                    paidBy: 'Sarah',
+                    icon: '💰',
+                    split: {}
+                }
+            ];
+
+            updateMemberList();
+            displayTransactions();
+            updateDashboard();
+            calculateBalances();
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                showPage(tab.dataset.page);
+            });
+        });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active');
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+        }
+
+        // Modal Management
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            if (modalId === 'addMoneyModal') {
+                updateContributorSelect();
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Group Management
+        function addMember() {
+            const nameInput = document.getElementById('memberName');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                alert('Please enter a name');
+                return;
+            }
+            
+            if (state.members.includes(name)) {
+                alert('Member already exists');
+                return;
+            }
+            
+            state.members.push(name);
+            state.contributions[name] = 0;
+            
+            nameInput.value = '';
+            updateMemberList();
+            updateContributorSelect();
+            updateDashboard();
+        }
+
+        function removeMember(name) {
+            const index = state.members.indexOf(name);
+            if (index > -1) {
+                state.members.splice(index, 1);
+                delete state.contributions[name];
+                updateMemberList();
+                updateDashboard();
+            }
+        }
+
+        function updateMemberList() {
+            const container = document.getElementById('memberList');
+            if (state.members.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <p>No members yet. Add friends to start planning!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = state.members.map(name => `
+                <div class="member-chip">
+                    <div class="member-avatar">${name[0].toUpperCase()}</div>
+                    <span>${name}</span>
+                    <button class="remove-btn" onclick="removeMember('${name}')">&times;</button>
+                </div>
+            `).join('');
+            
+            updateContributions();
+        }
+
+        function updateContributions() {
+            const container = document.getElementById('contributionsList');
+            container.innerHTML = state.members.map(member => `
+                <div class="expense-row">
+                    <div class="expense-info">
+                        <div class="expense-name">${member}</div>
+                        <div class="expense-category">Contributed</div>
+                    </div>
+                    <div class="expense-amount">€${state.contributions[member].toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateContributorSelect() {
+            const select = document.getElementById('contributorSelect');
+            select.innerHTML = state.members.map(name => 
+                `<option value="${name}">${name}</option>`
+            ).join('');
+        }
+
+        function addContribution() {
+            const contributor = document.getElementById('contributorSelect').value;
+            const amount = parseFloat(document.getElementById('contributionAmount').value);
+            
+            if (!contributor || !amount || amount <= 0) {
+                alert('Please select a member and enter a valid amount');
+                return;
+            }
+            
+            state.contributions[contributor] += amount;
+            
+            addTransaction(
+                `Contribution from ${contributor}`,
+                amount,
+                'contribution',
+                'credit',
+                contributor,
+                '💰',
+                {}
+            );
+            
+            document.getElementById('contributionAmount').value = '';
+            closeModal('addMoneyModal');
+            updateContributions();
+        }
+
+        // AI Travel Chat
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // User message
+            chatMessages.innerHTML += `
+                <div class="chat-message user">
+                    <div class="chat-avatar">You</div>
+                    <div class="chat-bubble">${message}</div>
+                </div>
+            `;
+            
+            input.value = '';
+            
+            // Simulate AI response
+            setTimeout(() => {
+                const responses = [
+                    "I found several options! ✈️ Here are the best flight deals for your group:",
+                    "🚆 Great choice! I've found some train options that might work for you:",
+                    "🚌 Let me search for bus routes. These are comfortable and budget-friendly options:"
+                ];
+                
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                
+                chatMessages.innerHTML += `
+                    <div class="chat-message">
+                        <div class="chat-avatar">AI</div>
+                        <div class="chat-bubble">${response}<br><br>
+                        <strong>Option 1:</strong> Direct flight - €189/person<br>
+                        <strong>Option 2:</strong> 1 stop - €145/person<br>
+                        <strong>Option 3:</strong> Budget airline - €99/person<br><br>
+                        Would you like more details on any of these?</div>
+                    </div>
+                `;
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Accommodation Search
+        function searchAccommodation() {
+            const destination = document.getElementById('accomDestination').value;
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            const budget = document.getElementById('budget').value;
+            const rooms = document.getElementById('rooms').value;
+            
+            if (!destination || !checkIn || !checkOut) {
+                alert('Please fill in required fields');
+                return;
+            }
+            
+            const accommodations = [
+                {
+                    name: 'Luxury Downtown Hotel',
+                    type: 'Hotel',
+                    rating: 9.2,
+                    reviews: 1847,
+                    price: Math.floor(budget * 1.2) || 180,
+                    features: ['Free WiFi', 'Pool', 'Gym', 'Restaurant', 'Bar'],
+                    icon: '🏨'
+                },
+                {
+                    name: 'Cozy City Apartment',
+                    type: 'Apartment',
+                    rating: 8.8,
+                    reviews: 923,
+                    price: Math.floor(budget * 0.9) || 120,
+                    features: ['Free WiFi', 'Kitchen', 'Washer', 'Balcony'],
+                    icon: '🏢'
+                },
+                {
+                    name: 'Boutique Guest House',
+                    type: 'Guest House',
+                    rating: 9.0,
+                    reviews: 654,
+                    price: Math.floor(budget * 0.8) || 100,
+                    features: ['Free WiFi', 'Breakfast', 'Garden', 'Terrace'],
+                    icon: '🏡'
+                },
+                {
+                    name: 'Modern Hostel Deluxe',
+                    type: 'Hostel',
+                    rating: 8.5,
+                    reviews: 2103,
+                    price: Math.floor(budget * 0.5) || 45,
+                    features: ['Free WiFi', 'Bar', 'Common Room', 'Lockers'],
+                    icon: '🛏️'
+                }
+            ];
+            
+            displayAccommodations(accommodations);
+        }
+
+        function displayAccommodations(accommodations) {
+            const container = document.getElementById('accommodationResults');
+            container.innerHTML = accommodations.map(accom => `
+                <div class="accommodation-card" onclick="bookAccommodation('${accom.name}', ${accom.price})">
+                    <div class="accommodation-image">${accom.icon}</div>
+                    <div class="accommodation-content">
+                        <div class="accommodation-header">
+                            <div>
+                                <div class="accommodation-name">${accom.name}</div>
+                                <div class="accommodation-rating">
+                                    <span class="rating-badge">${accom.rating}</span>
+                                    <span>${accom.reviews} reviews</span>
+                                    <span>• ${accom.type}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accommodation-features">
+                            ${accom.features.map(f => `<span class="feature-badge">${f}</span>`).join('')}
+                        </div>
+                        <div class="accommodation-footer">
+                            <div class="price-info">
+                                <span class="price-label">Price per night</span>
+                                <span class="price-value">€${accom.price}</span>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); bookAccommodation('${accom.name}', ${accom.price})">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function bookAccommodation(name, price) {
+            const nights = 3; // Default
+            const totalPrice = price * nights;
+            
+            if (!canAffordExpense(totalPrice)) {
+                const remaining = checkPoolBalance();
+                alert(`Insufficient funds! You need €${totalPrice.toFixed(2)} but only have €${remaining.toFixed(2)} remaining in the pool. Please add more money first.`);
+                return;
+            }
+            
+            const split = {};
+            state.members.forEach(member => {
+                split[member] = totalPrice / state.members.length;
+            });
+            
+            addTransaction(
+                `${name} (${nights} nights)`,
+                totalPrice,
+                'accommodation',
+                'debit',
+                'Group Wallet',
+                '🏨',
+                split
+            );
+            
+            alert(`${name} booked for ${nights} nights!`);
+        }
+
+        // Activities
+        function generateActivities() {
+            const destination = document.getElementById('activityDestination').value;
+            const interests = document.getElementById('interests').value;
+            
+            if (!destination) {
+                alert('Please enter a destination');
+                return;
+            }
+            
+            const activities = [
+                {
+                    name: 'La Sagrada Família Guided Tour',
+                    description: 'Skip-the-line access to Gaudí\'s masterpiece with expert guide',
+                    price: 32,
+                    duration: '2 hours',
+                    rating: 4.9,
+                    badge: 'Bestseller',
+                    icon: '🏛️'
+                },
+                {
+                    name: 'Tapas & Wine Tasting Tour',
+                    description: 'Explore local cuisine with a foodie guide through Gothic Quarter',
+                    price: 65,
+                    duration: '3 hours',
+                    rating: 4.8,
+                    badge: 'Popular',
+                    icon: '🍷'
+                },
+                {
+                    name: 'Park Güell Skip-the-Line',
+                    description: 'Explore Gaudí\'s colorful park with priority entrance',
+                    price: 21,
+                    duration: '1.5 hours',
+                    rating: 4.7,
+                    badge: 'Great Value',
+                    icon: '🎨'
+                },
+                {
+                    name: 'Barcelona Bike Tour',
+                    description: 'See the city highlights on a guided bicycle adventure',
+                    price: 28,
+                    duration: '3 hours',
+                    rating: 4.6,
+                    badge: 'Active',
+                    icon: '🚴'
+                },
+                {
+                    name: 'Sunset Sailing Experience',
+                    description: 'Cruise the Mediterranean coast with drinks included',
+                    price: 55,
+                    duration: '2.5 hours',
+                    rating: 4.9,
+                    badge: 'Romantic',
+                    icon: '⛵'
+                },
+                {
+                    name: 'Flamenco Show & Dinner',
+                    description: 'Authentic flamenco performance with traditional meal',
+                    price: 78,
+                    duration: '3 hours',
+                    rating: 4.8,
+                    badge: 'Cultural',
+                    icon: '💃'
+                }
+            ];
+            
+            displayActivities(activities);
+        }
+
+        function displayActivities(activities) {
+            const container = document.getElementById('activitiesResults');
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-card" onclick="bookActivity('${activity.name}', ${activity.price})">
+                    <div class="activity-image">
+                        ${activity.icon}
+                        <span class="activity-badge">${activity.badge}</span>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-name">${activity.name}</div>
+                        <div class="activity-description">${activity.description}</div>
+                        <div class="activity-meta">
+                            <span>⭐ ${activity.rating}</span>
+                            <span>•</span>
+                            <span>⏱️ ${activity.duration}</span>
+                        </div>
+                        <div class="activity-footer">
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">From</div>
+                            <div style="font-size: 1.25rem; font-weight: 700;">€${activity.price}</div>
+                            <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); bookActivity('${activity.name}', ${activity.price})">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function bookActivity(name, price) {
+            if (!canAffordExpense(price)) {
+                const remaining = checkPoolBalance();
+                alert(`Insufficient funds! You need €${price.toFixed(2)} but only have €${remaining.toFixed(2)} remaining in the pool. Please add more money first.`);
+                return;
+            }
+            
+            const split = {};
+            state.members.forEach(member => {
+                split[member] = price / state.members.length;
+            });
+            
+            addTransaction(name, price, 'activities', 'debit', 'Group Wallet', '🎯', split);
+            alert('Activity booked!');
+        }
+
+        // Transactions
+        function filterTransactions(category) {
+            state.currentTransactionFilter = category;
+            
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayTransactions();
+        }
+
+        function displayTransactions() {
+            const container = document.getElementById('transactionsList');
+            let transactions = state.transactions;
+            
+            if (state.currentTransactionFilter !== 'all') {
+                transactions = transactions.filter(t => t.category === state.currentTransactionFilter);
+            }
+            
+            if (transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No transactions found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            transactions.sort((a, b) => b.date - a.date);
+            
+            const groupedByDate = {};
+            transactions.forEach(transaction => {
+                const dateKey = transaction.date.toLocaleDateString('en-GB', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                if (!groupedByDate[dateKey]) {
+                    groupedByDate[dateKey] = [];
+                }
+                groupedByDate[dateKey].push(transaction);
+            });
+            
+            container.innerHTML = Object.keys(groupedByDate).map(dateKey => `
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                        ${dateKey}
+                    </div>
+                    ${groupedByDate[dateKey].map(transaction => `
+                        <div class="transaction-card">
+                            <div class="transaction-main" onclick="toggleSplit(${transaction.id})">
+                                <div class="transaction-icon ${transaction.category}">
+                                    ${transaction.icon}
+                                </div>
+                                <div class="transaction-details">
+                                    <div class="transaction-name">${transaction.name}</div>
+                                    <div class="transaction-meta">
+                                        <span>${transaction.paidBy}</span>
+                                        <span>•</span>
+                                        <span>${transaction.date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+                                        <span>•</span>
+                                        <span class="status-badge ${transaction.status}">${transaction.status}</span>
+                                        ${transaction.type === 'debit' && Object.keys(transaction.split).length > 0 ? '<span>•</span><span class="status-badge split">Split</span>' : ''}
+                                    </div>
+                                </div>
+                                <div class="transaction-amount ${transaction.type}">
+                                    ${transaction.type === 'credit' ? '+' : '-'}€${transaction.amount.toFixed(2)}
+                                </div>
+                            </div>
+                            ${transaction.type === 'debit' && Object.keys(transaction.split).length > 0 ? `
+                                <div class="transaction-split-section" id="split-${transaction.id}">
+                                    <div class="split-header">
+                                        <span class="split-title">Split Details</span>
+                                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); enableSplitEdit(${transaction.id})" id="edit-btn-${transaction.id}">
+                                            Edit Split
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="split-mode-toggle" id="split-mode-${transaction.id}" style="display: none;">
+                                        <button class="split-mode-btn active" onclick="setSplitMode(${transaction.id}, 'equal')">
+                                            Equal Split
+                                        </button>
+                                        <button class="split-mode-btn" onclick="setSplitMode(${transaction.id}, 'unequal')">
+                                            Unequal Split
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="split-list" id="split-list-${transaction.id}">
+                                        ${Object.entries(transaction.split).map(([member, amount]) => `
+                                            <div class="split-item">
+                                                <div class="split-member">
+                                                    <div class="member-avatar">${member[0]}</div>
+                                                    <span>${member}</span>
+                                                </div>
+                                                <div class="split-amount" id="amount-display-${transaction.id}-${member}">€${amount.toFixed(2)}</div>
+                                                <input type="number" 
+                                                       class="split-amount-input" 
+                                                       id="amount-input-${transaction.id}-${member}" 
+                                                       value="${amount.toFixed(2)}" 
+                                                       step="0.01"
+                                                       style="display: none;"
+                                                       onchange="validateSplitAmount(${transaction.id})">
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    
+                                    <div id="split-error-${transaction.id}"></div>
+                                    
+                                    <div class="split-controls" id="split-controls-${transaction.id}" style="display: none;">
+                                        <button class="btn btn-primary btn-small" onclick="saveSplitChanges(${transaction.id})">
+                                            Save Changes
+                                        </button>
+                                        <button class="btn btn-outline btn-small" onclick="cancelSplitEdit(${transaction.id})">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function toggleSplit(transactionId) {
+            const splitSection = document.getElementById(`split-${transactionId}`);
+            if (splitSection) {
+                splitSection.classList.toggle('active');
+            }
+        }
+
+        function enableSplitEdit(transactionId) {
+            // Show split mode toggle
+            document.getElementById(`split-mode-${transactionId}`).style.display = 'flex';
+            
+            // Show input fields, hide display amounts
+            const transaction = state.transactions.find(t => t.id === transactionId);
+            Object.keys(transaction.split).forEach(member => {
+                document.getElementById(`amount-display-${transactionId}-${member}`).style.display = 'none';
+                document.getElementById(`amount-input-${transactionId}-${member}`).style.display = 'block';
+            });
+            
+            // Show controls, hide edit button
+            document.getElementById(`split-controls-${transactionId}`).style.display = 'flex';
+            document.getElementById(`edit-btn-${transactionId}`).style.display = 'none';
+        }
+
+        function setSplitMode(transactionId, mode) {
+            const transaction = state.transactions.find(t => t.id === transactionId);
+            
+            // Update active button
+            const modeButtons = document.querySelectorAll(`#split-mode-${transactionId} .split-mode-btn`);
+            modeButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (mode === 'equal') {
+                // Calculate equal split
+                const numMembers = Object.keys(transaction.split).length;
+                const equalAmount = transaction.amount / numMembers;
+                
+                Object.keys(transaction.split).forEach(member => {
+                    const input = document.getElementById(`amount-input-${transactionId}-${member}`);
+                    input.value = equalAmount.toFixed(2);
+                });
+                
+                validateSplitAmount(transactionId);
+            }
+        }
+
+        function validateSplitAmount(transactionId) {
+            const transaction = state.transactions.find(t => t.id === transactionId);
+            const errorDiv = document.getElementById(`split-error-${transactionId}`);
+            
+            let total = 0;
+            Object.keys(transaction.split).forEach(member => {
+                const input = document.getElementById(`amount-input-${transactionId}-${member}`);
+                total += parseFloat(input.value) || 0;
+            });
+            
+            const difference = Math.abs(total - transaction.amount);
+            
+            if (difference > 0.01) {
+                errorDiv.innerHTML = `<div class="split-error">⚠️ Total must equal €${transaction.amount.toFixed(2)}. Current total: €${total.toFixed(2)}</div>`;
+                return false;
+            } else {
+                errorDiv.innerHTML = `<div class="split-success">✓ Split amounts are valid</div>`;
+                return true;
+            }
+        }
+
+        function saveSplitChanges(transactionId) {
+            if (!validateSplitAmount(transactionId)) {
+                alert('Please ensure split amounts add up to the total transaction amount');
+                return;
+            }
+            
+            const transaction = state.transactions.find(t => t.id === transactionId);
+            
+            // Update split amounts
+            Object.keys(transaction.split).forEach(member => {
+                const input = document.getElementById(`amount-input-${transactionId}-${member}`);
+                transaction.split[member] = parseFloat(input.value);
+            });
+            
+            // Refresh display
+            displayTransactions();
+            calculateBalances();
+            
+            // Show success message
+            alert('Split updated successfully!');
+        }
+
+        function cancelSplitEdit(transactionId) {
+            displayTransactions();
+        }
+
+        function addTransaction(name, amount, category, type, paidBy, icon, split) {
+            state.transactions.push({
+                id: state.transactions.length + 1,
+                name,
+                category,
+                amount,
+                type,
+                status: 'completed',
+                date: new Date(),
+                paidBy,
+                icon,
+                split: split || {}
+            });
+            
+            state.transactions.sort((a, b) => b.date - a.date);
+            
+            displayTransactions();
+            updateDashboard();
+            calculateBalances();
+        }
+
+        // Out-of-app Expenses (removed as per request)
+        function updateExpensesList() {
+            // Function kept for compatibility but no longer used
+        }
+
+        // Balances
+        function calculateBalances() {
+            const balances = {};
+            state.members.forEach(member => balances[member] = 0);
+            
+            // Add contributions
+            Object.keys(state.contributions).forEach(member => {
+                balances[member] += state.contributions[member];
+            });
+            
+            // Subtract what each person owes from splits
+            state.transactions.forEach(transaction => {
+                if (transaction.type === 'debit' && transaction.split) {
+                    Object.entries(transaction.split).forEach(([member, amount]) => {
+                        balances[member] -= amount;
+                    });
+                }
+            });
+            
+            displayBalances(balances);
+            displayIndividualBreakdown(balances);
+        }
+
+        function displayBalances(balances) {
+            const container = document.getElementById('balancesList');
+            
+            const settlements = [];
+            const debtors = [];
+            const creditors = [];
+            
+            Object.keys(balances).forEach(member => {
+                if (balances[member] < -0.01) {
+                    debtors.push({ member, amount: -balances[member] });
+                } else if (balances[member] > 0.01) {
+                    creditors.push({ member, amount: balances[member] });
+                }
+            });
+            
+            debtors.sort((a, b) => b.amount - a.amount);
+            creditors.sort((a, b) => b.amount - a.amount);
+            
+            let i = 0, j = 0;
+            while (i < debtors.length && j < creditors.length) {
+                const debt = debtors[i].amount;
+                const credit = creditors[j].amount;
+                const settleAmount = Math.min(debt, credit);
+                
+                if (settleAmount > 0.01) {
+                    settlements.push({
+                        from: debtors[i].member,
+                        to: creditors[j].member,
+                        amount: settleAmount
+                    });
+                }
+                
+                debtors[i].amount -= settleAmount;
+                creditors[j].amount -= settleAmount;
+                
+                if (debtors[i].amount < 0.01) i++;
+                if (creditors[j].amount < 0.01) j++;
+            }
+            
+            if (settlements.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <p>All settled up!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = settlements.map(settlement => `
+                <div class="balance-item">
+                    <div class="balance-users">
+                        <span style="font-weight: 600;">${settlement.from}</span>
+                        <span class="balance-arrow">→</span>
+                        <span style="font-weight: 600;">${settlement.to}</span>
+                    </div>
+                    <div class="balance-amount negative">€${settlement.amount.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        function displayIndividualBreakdown(balances) {
+            const container = document.getElementById('individualBreakdown');
+            container.innerHTML = state.members.map(member => {
+                const totalPaid = state.contributions[member] || 0;
+                const totalOwed = state.transactions
+                    .filter(t => t.type === 'debit' && t.split && t.split[member])
+                    .reduce((sum, t) => sum + t.split[member], 0);
+                const balance = balances[member];
+                
+                return `
+                    <div class="expense-row">
+                        <div class="expense-info">
+                            <div class="expense-name">${member}</div>
+                            <div class="expense-category">
+                                Paid: €${totalPaid.toFixed(2)} • Owes: €${totalOwed.toFixed(2)}
+                            </div>
+                        </div>
+                        <div class="expense-amount ${balance >= 0 ? 'positive' : 'negative'}">
+                            ${balance >= 0 ? '+' : ''}€${Math.abs(balance).toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            const totalPool = state.transactions
+                .filter(t => t.type === 'credit')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const totalExpenses = state.transactions
+                .filter(t => t.type === 'debit')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const remaining = totalPool - totalExpenses;
+            
+            document.getElementById('totalPool').textContent = `€${totalPool.toFixed(2)}`;
+            document.getElementById('totalExpenses').textContent = `€${totalExpenses.toFixed(2)}`;
+            
+            const remainingElement = document.getElementById('remaining');
+            remainingElement.textContent = `€${remaining.toFixed(2)}`;
+            
+            // Add visual warning if balance is negative
+            const remainingCard = remainingElement.closest('.stat-card');
+            const warningElement = document.getElementById('lowBalanceWarning');
+            
+            if (remaining < 0) {
+                remainingCard.style.background = 'linear-gradient(135deg, #FF5050, #E63946)';
+                warningElement.style.display = 'block';
+            } else {
+                remainingCard.style.background = 'linear-gradient(135deg, #00C9A7, #00D972)';
+                warningElement.style.display = 'none';
+            }
+            
+            updateRecentActivity();
+        }
+
+        function checkPoolBalance() {
+            const totalPool = state.transactions
+                .filter(t => t.type === 'credit')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const totalExpenses = state.transactions
+                .filter(t => t.type === 'debit')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            return totalPool - totalExpenses;
+        }
+
+        function canAffordExpense(amount) {
+            const remaining = checkPoolBalance();
+            return remaining >= amount;
+        }
+
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            const recentTransactions = [...state.transactions]
+                .sort((a, b) => b.date - a.date)
+                .slice(0, 5);
+            
+            if (recentTransactions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No recent activity yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = recentTransactions.map(transaction => `
+                <div class="expense-row">
+                    <div class="expense-info">
+                        <div class="expense-name">${transaction.name}</div>
+                        <div class="expense-category">${transaction.category} • ${transaction.date.toLocaleDateString()}</div>
+                    </div>
+                    <div class="expense-amount ${transaction.type === 'credit' ? 'positive' : ''}">${transaction.type === 'credit' ? '+' : '-'}€${transaction.amount.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        initializeDummyData();
+    </script>
+</body>
+</html>
